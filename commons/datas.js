@@ -3,7 +3,7 @@ export default{
 		let msg = [
 			{
 				id:'a',
-				imgurl:'one.png',
+				imgurl:'two.png',
 				message:'长沙市测试测试测试测试测试测试测试测试',
 				types:0,
 				time:new Date()-1000,
@@ -11,7 +11,7 @@ export default{
 			},
 			{
 				id:'a',
-				imgurl:'one.png',
+				imgurl:'two.png',
 				message:'行i偶的死哦改价哦i的设计风格iops的窘迫分给色破官方',
 				types:0,
 				time:new Date()-1000*16,
@@ -19,7 +19,7 @@ export default{
 			},
 			{
 				id:'b',
-				imgurl:'two.png',
+				imgurl:'one.png',
 				message:'设计风格iops的迫分给色破官方',
 				types:0,
 				time:new Date()-1000*60,
@@ -27,7 +27,7 @@ export default{
 			},
 			{
 				id:'a',
-				imgurl:'one.png',
+				imgurl:'two.png',
 				message:'one.png',
 				types:1,
 				time:new Date()-1000*60*36,
@@ -35,7 +35,7 @@ export default{
 			},
 			{
 				id:'a',
-				imgurl:'one.png',
+				imgurl:'two.png',
 				message:'561651651651',
 				types:0,
 				time:new Date()-1000*60*40,
@@ -43,7 +43,7 @@ export default{
 			},
 			{
 				id:'b',
-				imgurl:'two.png',
+				imgurl:'one.png',
 				message:'si.jpg',
 				types:1,
 				time:new Date()-1000*57,

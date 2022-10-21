@@ -16,7 +16,7 @@
 		<scroll-view class="chat" scroll-y="true" scroll-with-animation="true" :scroll-into-view="scrollToView"
 			:style="{height: `calc(100vh - ${submitHeight*2}rpx - 88rpx)`}">
 			<view class="chat-main">
-				<view class="chat-ls" v-for="(item,index) in msgs" :key="index" :id="'msg' + item.tip">
+				<view class="chat-ls" v-for="(item,index) in msgs" :key="index" :id="'msg' + index">
 					<view class="chat-time">{{item.time | formatData}}</view>
 					<view class="msg-m msg-left" v-if="item.id === 'a'">
 						<image class="user-img" :src="item.imgurl"></image>
@@ -50,7 +50,7 @@
 					</view> -->
 			</view>
 		</scroll-view>
-		<Submit @inputs='inputs' @heights='heights'></Submit>
+		<Submit @inputs='inputs' @heights='heights' @focus='focus'></Submit>
 	</view>
 </template>
 
@@ -115,7 +115,7 @@
 					this.msgs.unshift(msg[i]);
 				}
 				this.$nextTick(function() {
-					this.scrollToView = 'msg' + this.msgs[i - 1].tip;
+					this.scrollToView = 'msg' + (this.msgs.length-1);
 				})
 			},
 			previewImg(e) {
@@ -153,10 +153,10 @@
 			inputs(e) {
 				let len = this.msgs.length
 				let data = {
-					id: 'a',
+					id: 'b',
 					imgurl: '../../static/images/img/one.png',
-					message: e,
-					types: 0,
+					message: e.message,
+					types: e.types,
 					time: new Date(),
 					tip: len,
 				};
@@ -164,14 +164,30 @@
 				this.$nextTick(function() {
 					this.scrollToView = 'msg' + len;
 				})
+				if(e.types == 1){
+					this.imgMsg.push(e.message);
+				}
 			},
 			heights(e) {
-				console.log('height', e)
+				// console.log('height', e)
 				this.submitHeight = e;
-				// let len = this.msgs.length;
-				// this.$nextTick(function() {
+				let len = this.msgs.length-1;
+				console.log('pre',this.scrollToView)
+				// setTimeout(()=>{
 				// 	this.scrollToView = 'msg' + len;
-				// })
+				// },50)
+				this.$nextTick(function() {
+					this.scrollToView = 'msg' + len;
+				})
+				console.log('next',this.scrollToView)
+			},
+			focus(e){
+				console.log(e)
+				let len = this.msgs.length;
+				this.$nextTick(function() {
+					// let len = this.msgs.length-1;
+					this.scrollToView = 'msg' + len;
+				})
 			}
 		}
 	}
