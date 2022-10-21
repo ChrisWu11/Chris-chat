@@ -6,7 +6,14 @@
 			</view>
 			<textarea :class="{displaynone:isrecord}" auto-height="true" class="chat-send btn" @input="inputs"
 				v-model="msg" @focus="focus"></textarea>
-			<view class="record btn" :class="{displaynone:!isrecord}">按住说话</view>
+			<view 
+			class="record btn" 
+			:class="{displaynone:!isrecord}" 
+			@touchstart='touchstart' 
+			@touchend="touchend"
+			@touchmove="touchmove"
+			>按住说话
+			</view>
 			<view class="bt-img" @tap="emoji">
 				<image src="../../static/images/submit/bq.png"></image>
 			</view>
@@ -47,19 +54,32 @@
 				<view class="more-list-title">文件</view>
 			</view>
 		</view>
+		<view class="voice-bg" :class="{displaynone:!voiceBg}">
+			<view class="voice-bg-len">
+				<view class="voice-bg-time" :style="{width:vlength/0.6+'%'}">{{vlength}}"</view>
+			</view>
+			<view class="voice-del">
+				上滑取消录音
+			</view>
+		</view>
 	</view>
 </template>
 
 <script>
-	import Emoji from '@/components/submit/emoji/emoji.vue'
+	import Emoji from '@/components/submit/emoji/emoji.vue';
+	const recorderManager = uni.getRecorderManager();
 	export default {
 		data() {
 			return {
 				isrecord: false,
 				isemoji: false,
-				isMore:false,
+				isMore: false,
 				toc: '../../static/images/submit/yy.png',
-				msg: ''
+				msg: '',
+				timer: Number,
+				vlength: 0, //音频时长
+				voiceBg:false,
+				pageY:''
 			}
 		},
 		components: {
@@ -124,16 +144,16 @@
 					this.msg = this.msg.substring(0, this.msg.length - 1);
 				}
 			},
-			more(){
+			more() {
 				this.isMore = !this.isMore;
 				this.isemoji = false;
 				this.isrecord = false;
 				setTimeout(() => {
 					this.getElementHeight();
 				}, 10)
-				
+
 			},
-			sendImg(e){
+			sendImg(e) {
 				let count = 9;
 				e === 'album' ? count = 9 : 1;
 				let _this = this;
@@ -141,14 +161,55 @@
 					count: 6, //默认9
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: [e], //从相册选择
-					success: function (res) {
+					success: function(res) {
 						const filePath = res.tempFilePaths;
-						for(let i = 0;i < filePath.length;i++){
-							_this.send(filePath[i],1);
+						for (let i = 0; i < filePath.length; i++) {
+							_this.send(filePath[i], 1);
 						}
 						console.log(JSON.stringify(res.tempFilePaths));
 					}
 				});
+			},
+			touchstart(e) {
+				this.pageY = e.changedTouches[0].pageY;
+				let i = 1;
+				this.voiceBg = true;
+				this.timer = setInterval(() => {
+					this.vlength = i;
+					// console.log(i)
+					i++;
+					if (i > 60) {
+						clearInterval(this.timer);
+						this.touchend();
+					}
+				}, 1000)
+
+				recorderManager.start();
+			},
+			touchend() {
+				let _this = this;
+				clearInterval(this.timer);
+				recorderManager.stop();
+				recorderManager.onStop(function(res) {
+					let data = {
+						vioce:res.tempFilePath,
+						time:_this.vlength
+					}
+					if(_this.voiceBg){
+						_this.send(data,2);
+					}
+					
+					_this.vlength = 0;
+					_this.voiceBg = false;
+					// console.log('recorder stop' + JSON.stringify(res));
+					// self.voicePath = res.tempFilePath;
+				});
+			},
+			touchmove(e){
+				if(this.pageY - e.changedTouches[0].pageY > 100){
+					this.voiceBg = false;
+					
+				}
 			},
 			send(msg, type) {
 				let data = {
@@ -172,7 +233,7 @@
 		// height: 100rpx;
 		position: fixed;
 		bottom: 0;
-		z-index: 100;
+		z-index: 1002;
 		padding-bottom: var(--status-bar-height);
 		transition: all .2s linear;
 	}
@@ -264,7 +325,8 @@
 			}
 		}
 	}
-	.more{
+
+	.more {
 		width: 100%;
 		height: 436rpx;
 		background-color: rgba(236, 237, 238, 1);
@@ -273,23 +335,63 @@
 		padding: 20rpx;
 		box-sizing: border-box;
 		padding-top: 8rpx 20rpx;
-		.more-list{
+
+		.more-list {
 			width: 25%;
 			text-align: center;
 			float: left;
 			padding-top: 32rpx;
-			image{
+
+			image {
 				width: 72rpx;
 				height: 72rpx;
 				padding: 24rpx;
 				background: #fff;
 				border-radius: 24rpx;
 			}
-			.more-list-title{
+
+			.more-list-title {
 				font-size: 24rpx;
-				color: rbga(39,40,50,0.5);
+				color: rbga(39, 40, 50, 0.5);
 				line-height: 34rpx;
 			}
+		}
+	}
+	.voice-bg{
+		height: 90%;
+		width: 100%;
+		background-color: rgba(0, 0, 0, 0.3);
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 1001;
+		.voice-bg-len{
+			height: 84rpx;
+			width: 600rpx;
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			margin: auto;
+			background-color: rgba(255, 255, 255, 0.2);
+			border-radius: 42rpx;
+			text-align: center;
+		}
+		.voice-bg-time{
+			display: inline-block;
+			min-width: 120rpx;
+			// width: 120rpx;
+			line-height: 84rpx;
+			background-color: #fff268;
+			border-radius: 42rpx;
+		}
+		.voice-del{
+			position: absolute;
+			bottom: 40rpx;
+			width: 100%;
+			text-align: center;
+			color: #fff;font-size: 28rpx;
 		}
 	}
 </style>

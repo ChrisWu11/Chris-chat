@@ -4,6 +4,28 @@ export default{
 			{
 				id:'a',
 				imgurl:'two.png',
+				message:{
+					voice:'a',
+					time:60
+				},
+				types:2,
+				time:new Date(),
+				tip:10,
+			},
+			{
+				id:'b',
+				imgurl:'one.png',
+				message:{
+					voice:'b',
+					time:20
+				},
+				types:2,
+				time:new Date(),
+				tip:11,
+			},
+			{
+				id:'a',
+				imgurl:'two.png',
 				message:'长沙市测试测试测试测试测试测试测试测试',
 				types:0,
 				time:new Date()-1000,

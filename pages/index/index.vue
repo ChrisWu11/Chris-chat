@@ -27,6 +27,12 @@
 							<image :src="item.message" mode="widthFix" class="msg-img" @tap="previewImg(item.message)">
 							</image>
 						</view>
+						<view class="message" v-if="item.types === 2">
+							<view @tap="playVoice(item.message.voice)" class="msg-text voice" :style="{width:item.message.time*4 + 'px'}">
+								<image class="voice-img" src="../../static/images/chatroom/yy.png" mode=""></image>
+								{{item.message.time}}"
+							</view>
+						</view>
 					</view>
 					<view class="msg-m msg-right" v-if="item.id === 'b'">
 						<image class="user-img" :src="item.imgurl"></image>
@@ -36,6 +42,12 @@
 						<view class="message" v-if="item.types === 1">
 							<image :src="item.message" mode="widthFix" class="msg-img" @tap="previewImg(item.message)">
 							</image>
+						</view>
+						<view class="message" v-if="item.types === 2">
+							<view @tap="playVoice(item.message.vioce)" class="msg-text voice" :style="{width:item.message.time*4 + 'px'}">
+								{{item.message.time}}"
+								<image class="voice-img" src="../../static/images/chatroom/yy.png" mode=""></image>
+							</view>
 						</view>
 					</view>
 				</view>
@@ -137,6 +149,14 @@
 							console.log(err.errMsg);
 						}
 					}
+				});
+			},
+			playVoice(e){
+				const innerAudioContext = uni.createInnerAudioContext();
+				innerAudioContext.autoplay = true;
+				innerAudioContext.src = e;
+				innerAudioContext.onPlay(() => {
+				  console.log('开始播放');
 				});
 			},
 			spaceTime(old, now) {
@@ -293,6 +313,15 @@
 					max-width: 400rpx;
 					border-radius: 20rpx;
 				}
+				.voice{
+					min-width: 80rpx;
+					max-width: 400rpx;
+					
+				}
+				.voice-img{
+					width: 28rpx;
+					height: 36rpx;
+				}
 			}
 
 			.msg-left {
@@ -307,6 +336,16 @@
 				.msg-img {
 					margin-left: 16rpx;
 				}
+				.voice{
+					text-align: right;
+				}
+				.voice-img{
+					float: left;
+					transform: rotate(180deg);
+					width: 28rpx;
+					height: 36rpx;
+					padding-bottom: 4rpx;
+				}
 			}
 
 			.msg-right {
@@ -320,6 +359,15 @@
 
 				.msg-img {
 					margin-right: 16rpx;
+				}
+				.voice{
+					text-align: left;
+				}
+				.voice-img{
+					float: right;
+					margin-top: 4rpx;
+					width: 28rpx;
+					height: 36rpx;
 				}
 			}
 		}
